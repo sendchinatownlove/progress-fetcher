@@ -2,10 +2,13 @@ const { JSDOM } = require("jsdom");
 const playwright = require("playwright");
 const express = require("express");
 var mcache = require("memory-cache");
+var cors = require('cors')
 
 const app = express();
 const port = process.env.PORT || 3000;
 const cacheTime = process.env.CACHE_TIME || 5;
+
+app.use(cors())
 
 var cache = (duration) => {
     return (req, res, next) => {
