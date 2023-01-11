@@ -1,9 +1,11 @@
 const { JSDOM } = require("jsdom");
 const playwright = require("playwright");
 const express = require("express");
+var mcache = require('memory-cache');
 
 const app = express();
 const port = process.env.PORT || 3000;
+const cacheTime = process.env.CACHE_TIME || 5;
 
 var cache = (duration) => {
     return (req, res, next) => {
@@ -15,7 +17,7 @@ var cache = (duration) => {
       } else {
         res.sendResponse = res.send
         res.send = (body) => {
-          mcache.put(key, body, duration * 1000);
+          mcache.put(key, body, duration * 60000);
           res.sendResponse(body)
         }
         next()
@@ -39,7 +41,7 @@ async function getProgress() {
     return amount;
 }
 
-app.get("/", cache(10), async (req, res) => {
+app.get("/", cache(cacheTime), async (req, res) => {
     res.send(await getProgress());
 });
 
