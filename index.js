@@ -34,7 +34,7 @@ async function getProgress() {
     });
 
     const page = await browser.newPage();
-    await page.goto("https://square.link/u/h08m5ohB");
+    await page.goto("https://square.link/u/FsSrAUPG");
     await page.waitForTimeout(400);
 
     let amount = await page.locator(".donation-progress-amount").innerText();
