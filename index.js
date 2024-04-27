@@ -28,13 +28,16 @@ var cache = (duration) => {
     };
 };
 
-async function getProgress() {
+async function getProgress(squareId) {
+    if (!!squareId) squareId = "Mu2cYSms";
+    const squareUrl = "https://square.link/u/" + squareId;
+
     const browser = await playwright.chromium.launch({
         headless: true,
     });
 
     const page = await browser.newPage();
-    await page.goto("https://square.link/u/FsSrAUPG");
+    await page.goto(squareUrl);
     await page.waitForTimeout(400);
 
     let amount = await page.locator(".donation-progress-amount").innerText();
@@ -47,6 +50,10 @@ async function getProgress() {
 
 app.get("/", cache(cacheTime), async (req, res) => {
     res.send(await getProgress());
+});
+
+app.get("/:squareId", cache(cacheTime), async (req, res) => {
+    res.send(await getProgress(req.params.squareId));
 });
 
 app.listen(port, () => {
