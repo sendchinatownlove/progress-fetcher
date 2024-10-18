@@ -34,21 +34,26 @@ async function getProgress(checkoutID) {
         squareUrl = "https://checkout.square.site/merchant/B4M6RCB1WWG5F/checkout/" + checkoutID;
     }
 
-    const browser = await playwright.chromium.launch({
-        headless: true,
-    });
+    try {
+        const browser = await playwright.chromium.launch({
+            headless: true,
+        });
+    
+        const page = await browser.newPage();
+        await page.goto(squareUrl);
+        await page.waitForTimeout(400);
+    
+        let loc = page.locator(".donation-progress-amount");
+        let amount = await loc.innerText();
+        amount = Number.parseInt(amount.substring(1).replace(/,/g, ""));
+    
+        await browser.close();
 
-    const page = await browser.newPage();
-    await page.goto(squareUrl);
-    await page.waitForTimeout(400);
-
-    let loc = page.locator(".donation-progress-amount");
-    let amount = await loc.innerText();
-    amount = Number.parseInt(amount.substring(1).replace(/,/g, ""));
-
-    await browser.close();
-
-    return { amount: amount };
+        return { amount: amount };
+    }
+    catch (err) {
+        return err;
+    }
 }
 
 app.get("/", cache(cacheTime), async (req, res) => {
